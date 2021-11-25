@@ -2,7 +2,9 @@
 ## WORKSHOP: NEO4J BASICS
 An introduction to neo4js graph database. In this workshop, we will be highlighting the basic queries for working with the Cypher Query Language. 
 
-### 1. CONSTRAINTS
+<details>
+	<summary> <b> 1. CONSTRAINTS </b></summary>
+	<br>
 
 /// constraint unique on movie title
 ```
@@ -20,8 +22,11 @@ To drop a constraint we write
 ```
 DROP CONSTRAINT <constraint_name>
 ```
+</details>
 
-### 2. LOADING THE DATA
+<details>
+	<summary> <b> 2. LOADING THE DATA </b></summary>
+	<br>
 
 // load movies
 ```
@@ -81,8 +86,11 @@ CALL db.schema.visualization
 ```
 CREATE (:Movie {title: 'The Matrix'});
 ```
-
-### 3. MATCH, EXPLAIN and PROFILE
+</details>
+	
+<details>
+	<summary> <b> 3. MATCH, EXPLAIN and PROFILE </b></summary>
+	<br>
 
 // finding Tom
 ```
@@ -140,8 +148,11 @@ MATCH (m:Movie)-[a2:ACTED_IN]-(p2:Person)
 WHERE p2.name = "Tom Cruise"
 RETURN p2.name, a2.roles, m.title;
 ```
+</details>
 
-### 4. CREATE, MERGE and DELETE
+<details>
+	<summary> <b> 4. CREATE, MERGE and DELETE </b></summary>
+	<br>
 
 // create yourself as an actor
 ```
@@ -197,8 +208,11 @@ MATCH (a:Actor {name: "Kadde Oucif"})
 MATCH (m:Movie {title: "The Matrix"})
 RETURN a, m
 ```
+</details>
 
-### 5. TRAVERSAL
+<details>
+	<summary> <b> 5. TRAVERSAL </b></summary>
+	<br>
 
 // single MATCH
 ```
@@ -231,7 +245,12 @@ MATCH paths = (m:Movie)-[rel]-(p:Person)
 WHERE m.title = 'The Replacements'
 RETURN paths
 ```
-### 6. COLLECT and COUNT
+								      
+</details>	
+
+<details>
+	<summary> <b> 6. COLLECT and COUNT </b></summary>
+	<br>
 
 // aggregation using collect()
 ```
@@ -258,8 +277,11 @@ RETURN path
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
 RETURN m.title, collect(a.name)[1] AS `A cast member`, size(collect(a.name)) AS castSize
 ```
-
-### 7. WITH and UNWIND
+</details>
+	
+<details>
+	<summary> <b> 7. WITH and UNWIND </b></summary>
+	<br>
 
 // with and unwind
 ```
@@ -268,8 +290,11 @@ WITH collect(p) AS actors, count(p) AS actorCount, m
 UNWIND actors AS actor
 RETURN m.title, actorCount, actor.name
 ```
+</details>
 
-### 8. DISTINCT, ORDER BY and LIMIT
+<details>
+	<summary> <b> 8. DISTINCT, ORDER BY and LIMIT</b></summary>
+	<br>
 
 // eliminate duplicates using DISTINCT
 ```
@@ -277,7 +302,7 @@ MATCH (p:Person)-[:DIRECTED | ACTED_IN]->(m:Movie)
 WHERE p.name = 'Tom Hanks'
 RETURN DISTINCT m.title, m.released
 ```
-
+	
 // eliminate duplicates using DISTINCT in lists, f.e. Tom Hanks acted and directed "That Thing You Do"
 ```
 MATCH (p:Person)-[:ACTED_IN | DIRECTED | WROTE]->(m:Movie)
@@ -299,8 +324,11 @@ MATCH (m:Movie)
 RETURN m.title as title, m.released as year   
 ORDER BY m.released DESC LIMIT 10
 ```
+</details>
 
-### 9. ADDITIONAL CYPHERS QUERIES
+<details>
+	<summary> <b> 9. ADDITIONAL CYPHERS QUERIES</b></summary>
+	<br>
 
 // find movies released in the '90s
 ```
@@ -338,12 +366,17 @@ WITH a, count(a) AS numMovies, collect(m.title) AS movies
 WHERE numMovies <= 5
 RETURN a.name, movies
 ```
+</details>
 
-### [BONUS] EASTER EGG
+<details>
+	<summary> <b> [BONUS] EASTER EGG</b></summary>
+	<br>
 ```
 MATCH (p:Person{name:'Emil Eifrem'})-[a:ACTED_IN]->(m:Movie)
 RETURN p, a, m
 ```
+</details>
+
 
 ### Additional links
 
