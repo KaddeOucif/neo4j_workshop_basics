@@ -1,9 +1,6 @@
-# neo4j_workshop_basics
-An introduction to the world of graph databases w/ help of Neo4j
-
-
+![neo4j-banner](pics/neo4j_banner.png)
 ## WORKSHOP: NEO4J BASICS
-In this workshop, we will be highlighting the basic queries for working with the Cypher Query Language. 
+An introduction to neo4js graph database. In this workshop, we will be highlighting the basic queries for working with the Cypher Query Language. 
 
 ### 1. CONSTRAINTS
 
@@ -19,9 +16,9 @@ CREATE CONSTRAINT personname_uniqueness ON (p:Person) ASSERT p.name IS UNIQUE;
 ```
 SHOW CONSTRAINT
 ```
-// drop constraint
+To drop a constraint we write
 ```
-DROP CONSTRAINT constraint_name
+DROP CONSTRAINT <constraint_name>
 ```
 
 ### 2. LOADING THE DATA
@@ -56,7 +53,7 @@ AS row
 MATCH (p:Person {name: row.person})
 MATCH (m:Movie {title: row.movie})
 MERGE (p)-[actedIn:ACTED_IN]->(m)
-ON CREATE SET actedIn.roles = split(row.roles,’;’);
+ON CREATE SET actedIn.roles = split(row.roles,';');
 ```
 
 // verify
@@ -82,7 +79,7 @@ CALL db.schema.visualization
 ```
 // check constraints
 ```
-CREATE (:Movie {title: ‘The Matrix’});
+CREATE (:Movie {title: 'The Matrix'});
 ```
 
 ### 3. MATCH, EXPLAIN and PROFILE
@@ -159,7 +156,7 @@ MERGE (a:Actor {name: "Kadde Oucif"});
 // updating properties
 ```
 MERGE (a:Actor {name: "Kadde Oucif"})
-ON MATCH SET a.job = 'actor’
+ON MATCH SET a.job = 'actor'
 RETURN a
 ```
 
@@ -170,44 +167,60 @@ WITH a, m
 MERGE (a)-[:ACTED_IN]->(m)
 ```
 
-// delete yourself as an actor
+// try to delete yourself as an actor
 ```
 MATCH(a:Actor {name: "Kadde Oucif"}) DELETE a
 ```
 
-// detach delete
+// as you can see, this wont work since your node is connected to other nodes. let's try a detach delete
 ```
 MATCH(a:Actor {name: "Kadde Oucif"}) DETACH DELETE a
 ```
 
-// delete relationship
+// that worked better. But what if I only want to delete a relationship? let's recreate the Actor-node and link it to a movie
+```
+CREATE (a:Actor {name: "Kadde Oucif"})
+WITH a
+MATCH (m:Movie {title: "The Matrix"})
+MERGE (a)-[:ACTED_IN]->(m)
+```
+
+// Now let's see how we can delete a relationship
 ```
 MATCH (a:Actor {name:"Kadde Oucif"})-[r]->(m:Movie {title: "The Matrix"})
 DELETE r
 ```
+
+// Let's check if the relationship is still there
+```
+MATCH (a:Actor {name: "Kadde Oucif"})
+MATCH (m:Movie {title: "The Matrix"})
+RETURN a, m
+```
+
 ### 5. TRAVERSAL
 
 // single MATCH
 ```
 MATCH (valKilmer:Person)-[:ACTED_IN]->(m:Movie),
 	    (actor:Person)-[:ACTED_IN]->(m)
-WHERE valKilmer.name = 'Val Kilmer’
-RETURN m.title as movie , actor.name
+WHERE valKilmer.name = 'Val Kilmer'
+RETURN m.title as movie , actor.name as actor
 ```
 
 // multiple MATCH
 ```
 MATCH (valKilmer:Person)-[:ACTED_IN]->(m:Movie) 
 MATCH (actor:Person)-[:ACTED_IN]->(m)
-WHERE valKilmer.name = 'Val Kilmer’ 
+WHERE valKilmer.name = 'Val Kilmer'
 RETURN m.title as movie , actor.name
 ```
 
 // multiple anchors
 ```
 MATCH (p1:Person)-[:ACTED_IN]->(m) MATCH (n)<-[:ACTED_IN]-(p2:Person) 
-WHERE p1.name = ’Tom Hanks’ 
-  AND p2.name = ’Tom Cruise’  
+WHERE p1.name = 'Tom Hanks'
+  AND p2.name = 'Meg Ryan'
   AND m=n 
 RETURN m.title
 ```
@@ -230,7 +243,7 @@ RETURN p.name, collect(m.title) AS `movies`
 // aggregation using count()
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
-RETURN a.name, d.name, count(m)
+RETURN a.name, d.name, count(m) as amountOfMoviesTogether
 ```
 
 // check
@@ -239,6 +252,8 @@ MATCH path=(a:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
 WHERE a.name='Ben Miles' AND d.name='James Marshall'
 RETURN path
 ```
+
+// use aggregation to get cast size & first cast members
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
 RETURN m.title, collect(a.name)[1] AS `A cast member`, size(collect(a.name)) AS castSize
@@ -263,7 +278,7 @@ WHERE p.name = 'Tom Hanks'
 RETURN DISTINCT m.title, m.released
 ```
 
-// eliminate duplicates using DISTINCT in lists
+// eliminate duplicates using DISTINCT in lists, f.e. Tom Hanks acted and directed "That Thing You Do"
 ```
 MATCH (p:Person)-[:ACTED_IN | DIRECTED | WROTE]->(m:Movie)
 WHERE m.released = 1996
