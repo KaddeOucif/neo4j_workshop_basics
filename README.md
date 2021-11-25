@@ -6,19 +6,19 @@ An introduction to neo4js graph database. In this workshop, we will be highlight
 	<summary> <b> 1. CONSTRAINTS </b></summary>
 	<br>
 
-/// constraint unique on movie title
+Let's start with creating constraints within our database. The first constraint is to make sure nobody creates multiple movies with the same title.
 ```
 CREATE CONSTRAINT title_uniqueness ON (m:Movie) ASSERT m.title IS UNIQUE;
 ```
-// constraint unique on person name
+Let's do the same thing with person names. In the real world, multiple persons could have the same name, but we do not have any personal identifiers in the database as of right now - so let's just pretend that this is how it works.
 ```
 CREATE CONSTRAINT personname_uniqueness ON (p:Person) ASSERT p.name IS UNIQUE;
 ```
-// show constraints
+Now let's have a look at our constraints set on this database.
 ```
 SHOW CONSTRAINT
 ```
-To drop a constraint we write
+To drop a constraint we write:
 ```
 DROP CONSTRAINT <constraint_name>
 ```
@@ -28,30 +28,30 @@ DROP CONSTRAINT <constraint_name>
 	<summary> <b> 2. LOADING THE DATA </b></summary>
 	<br>
 
-// load movies
+Now let's load movies into the database from an external data source. This data source provides us with the movie nodes from a .csv that we will be ingesting into our database.
 ```
 LOAD CSV WITH HEADERS FROM 'http://data.neo4j.com/intro/movies/movies.csv'
 AS row
 CREATE (:Movie {title: row.title, released: toInteger(row.released), tagline: row.tagline});
 ```
 
-// verify
+Let's verify that our movies got imported, you should have around 38 movies after executing this query
 ```
 MATCH (m:Movie) RETURN count(*);
 ```
 
-// load persons
+Now let's do the same thing but for persons
 ```
 LOAD CSV WITH HEADERS FROM 'http://data.neo4j.com/intro/movies/people.csv'
 AS row
 CREATE (:Person {name: row.name, born: toInteger(row.born)});
 ```
-// verify
+Let's verify that the persons got into the database as well
 ```
 MATCH (p:Person) RETURN count(*);
 ```
 
-// load relationships (acted_in)
+If everything went well, then we should move on to the next step which would be to create a relationship between a Person and a Movie. In this case we're going to make sure we create relationships between the Actors and the Movies (ACTED_IN).
 ```
 LOAD CSV WITH HEADERS FROM 'http://data.neo4j.com/intro/movies/actors.csv'
 AS row
@@ -61,12 +61,12 @@ MERGE (p)-[actedIn:ACTED_IN]->(m)
 ON CREATE SET actedIn.roles = split(row.roles,';');
 ```
 
-// verify
+Let's verify that we managed to create the relationships.
 ```
 MATCH(p:Person {name: "Tom Hanks"})-[a:ACTED_IN]-(m:Movie) RETURN p,a,m;
 ```
 
-// load relationships (directed)
+Let's create another relationship, but instead of actors we make sure that those who directed certain movies have a DIRECTED relationship set up.
 ```
 LOAD CSV WITH HEADERS FROM 'http://data.neo4j.com/intro/movies/directors.csv' AS row
 MATCH (p:Person {name: row.person })
@@ -74,15 +74,15 @@ MATCH (m:Movie {title: row.movie})
 MERGE (p)-[:DIRECTED]->(m);
 ```
 
-// verify
+Let's see if our query managed to create the DIRECTED relationship.
 ```
 MATCH(p:Person {name: "Tom Hanks"})-[d:DIRECTED]-(m:Movie) RETURN p,d,m;
 ```
-// check schema
+By doing all this, we actually have a schema to look at. We can see what the schema looks like by calling; 
 ```
 CALL db.schema.visualization
 ```
-// check constraints
+Lastly, let's see if our constraints are working as they should. If you remember in the beginning, we made sure that no duplicate movie could be created in the graph database. If you run the query below, then you should get an error.
 ```
 CREATE (:Movie {title: 'The Matrix'});
 ```
@@ -92,37 +92,37 @@ CREATE (:Movie {title: 'The Matrix'});
 	<summary> <b> 3. MATCH, EXPLAIN and PROFILE </b></summary>
 	<br>
 
-// finding Tom
+By finding a certain node we run the MATCH command, which can be followed by a certain criteria (such as name in this case).
 ```
 MATCH (p:Person {name: "Tom Hanks"})
 RETURN p;
 ```
 
-// finding Tom too
+Another way to do this could be:
 ```
 MATCH (p:Person)
 WHERE p.name = "Tom Hanks" RETURN p;
 ```
 
-// analyzing finding Tom
+If you'd like to analyze your queries then you can run:
 ```
 PROFILE MATCH (p:Person {name: "Tom Hanks"})
 RETURN p;
 ```
 
-// analyzing finding Tom too
+Let's analyze the other query as well:
 ```
 PROFILE MATCH (p:Person)
 WHERE p.name = "Tom Hanks" RETURN p;
 ```
 
-// analyzing without finding Tom
+<b>PROFILE</b> analyzes the query while executing it. If you'd like to just analyze the query without executing it then <b>EXPLAIN</b> is your command.
 ```
 EXPLAIN MATCH (p:Person {name: "Tom Hanks"})
 RETURN p;
 ```
 
-// analyzing without finding Tom too
+Let's do the same thing here as well:
 ```
 EXPLAIN MATCH (p:Person)
 WHERE p.name = "Tom Hanks" RETURN p;
