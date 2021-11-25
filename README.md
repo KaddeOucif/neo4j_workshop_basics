@@ -2,6 +2,9 @@
 ## WORKSHOP: NEO4J BASICS
 An introduction to neo4js graph database. In this workshop, we will be highlighting the basic queries for working with the Cypher Query Language. 
 
+## Prerequisites
+Before starting, make sure you got [Neo4j Desktop](https://neo4j.com/download/) downloaded. You can also use the [Neo4j Sandbox](https://neo4j.com/sandbox/), but please use it as a last resort as you'd only have access for a couple of days. 
+
 <details>
 	<summary> <b> 1. CONSTRAINTS </b></summary>
 	<br>
@@ -128,7 +131,7 @@ EXPLAIN MATCH (p:Person)
 WHERE p.name = "Tom Hanks" RETURN p;
 ```
 
-// did Tom act with Tom ?
+Let's further elaborate on the MATCH clauses. Did Tom act with Tom?
 ```
 MATCH (p1:Person)-[a1:ACTED_IN]-(m:Movie)-[a2:ACTED_IN]-(p2:Person)
 WHERE p1.name = "Tom Hanks"
@@ -136,13 +139,14 @@ AND p2.name = "Tom Cruise"
 RETURN p1.name, a1.roles, p2.name, a2.roles, m.title;
 ```
 
-// let's check 1
+Interesting. Let's confirm the previous result by checking what roles Tom Hanks have had.
 ```
 MATCH (p1:Person)-[a1:ACTED_IN]-(m:Movie)
 WHERE p1.name = "Tom Hanks"
 RETURN p1.name, a1.roles, m.title;
 ```
-// let's check 2
+
+And now Tom Cruise.
 ```
 MATCH (m:Movie)-[a2:ACTED_IN]-(p2:Person)
 WHERE p2.name = "Tom Cruise"
@@ -154,41 +158,41 @@ RETURN p2.name, a2.roles, m.title;
 	<summary> <b> 4. CREATE, MERGE and DELETE </b></summary>
 	<br>
 
-// create yourself as an actor
+To create a node we use the CREATE command. Replace the name below with your name.
 ```
 CREATE (a:Actor {name: "Kadde Oucif"});
 ```
 
-// merge
+We can do the same thing with MERGE, however MERGE always checks if the specific object we're trying to create exists. In this way, it's helpful to think of MERGE as attempting a MATCH on the pattern, and if no match is found, a CREATE of the pattern.
 ```
 MERGE (a:Actor {name: "Kadde Oucif"});
 ```
 
-// updating properties
+Let's use MERGE to create a job description in our Actor node.
 ```
 MERGE (a:Actor {name: "Kadde Oucif"})
 ON MATCH SET a.job = 'actor'
 RETURN a
 ```
 
-// create relationship
+Now let's use our actor node and create a relationship to a movie.
 ```
 MATCH (a:Actor {name: "Kadde Oucif"}),(m:Movie{title:'The Matrix'})
 WITH a, m
 MERGE (a)-[:ACTED_IN]->(m)
 ```
 
-// try to delete yourself as an actor
+Nice. Now let's try to delete the node we created previously
 ```
 MATCH(a:Actor {name: "Kadde Oucif"}) DELETE a
 ```
 
-// as you can see, this wont work since your node is connected to other nodes. let's try a detach delete
+As you can see, this wont work since your node is connected to other nodes. let's try a detach delete then.
 ```
 MATCH(a:Actor {name: "Kadde Oucif"}) DETACH DELETE a
 ```
 
-// that worked better. But what if I only want to delete a relationship? let's recreate the Actor-node and link it to a movie
+That worked better. But what if I only want to delete a relationship? Let's recreate the Actor-node and link it to a movie
 ```
 CREATE (a:Actor {name: "Kadde Oucif"})
 WITH a
@@ -196,13 +200,13 @@ MATCH (m:Movie {title: "The Matrix"})
 MERGE (a)-[:ACTED_IN]->(m)
 ```
 
-// Now let's see how we can delete a relationship
+Now let's see how we can delete a relationship
 ```
 MATCH (a:Actor {name:"Kadde Oucif"})-[r]->(m:Movie {title: "The Matrix"})
 DELETE r
 ```
 
-// Let's check if the relationship is still there
+Let's check if the relationship is still there
 ```
 MATCH (a:Actor {name: "Kadde Oucif"})
 MATCH (m:Movie {title: "The Matrix"})
@@ -214,7 +218,7 @@ RETURN a, m
 	<summary> <b> 5. TRAVERSAL </b></summary>
 	<br>
 
-// single MATCH
+There's different ways we can traverse the data. Here's a single MATCH.
 ```
 MATCH (valKilmer:Person)-[:ACTED_IN]->(m:Movie),
 	    (actor:Person)-[:ACTED_IN]->(m)
@@ -222,7 +226,7 @@ WHERE valKilmer.name = 'Val Kilmer'
 RETURN m.title as movie , actor.name as actor
 ```
 
-// multiple MATCH
+Here's multiple:
 ```
 MATCH (valKilmer:Person)-[:ACTED_IN]->(m:Movie) 
 MATCH (actor:Person)-[:ACTED_IN]->(m)
@@ -230,7 +234,7 @@ WHERE valKilmer.name = 'Val Kilmer'
 RETURN m.title as movie , actor.name
 ```
 
-// multiple anchors
+Here we have multiple anchors.
 ```
 MATCH (p1:Person)-[:ACTED_IN]->(m) MATCH (n)<-[:ACTED_IN]-(p2:Person) 
 WHERE p1.name = 'Tom Hanks'
@@ -239,7 +243,7 @@ WHERE p1.name = 'Tom Hanks'
 RETURN m.title
 ```
 
-// returning a subgraph
+Now let's return a subgraph.
 ```
 MATCH paths = (m:Movie)-[rel]-(p:Person)
 WHERE m.title = 'The Replacements'
@@ -252,27 +256,27 @@ RETURN paths
 	<summary> <b> 6. COLLECT and COUNT </b></summary>
 	<br>
 
-// aggregation using collect()
+The function collect() returns a single aggregated list containing the values returned by an expression.
 ```
 MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
 WHERE p.name ='Tom Cruise'
 RETURN p.name, collect(m.title) AS `movies`
 ```
 
-// aggregation using count()
+The function count() returns the number of values or rows.
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
 RETURN a.name, d.name, count(m) as amountOfMoviesTogether
 ```
 
-// check
+Let's check the results here, apparently the previous query returned 2 movies.
 ```
 MATCH path=(a:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(d:Person)
 WHERE a.name='Ben Miles' AND d.name='James Marshall'
 RETURN path
 ```
 
-// use aggregation to get cast size & first cast members
+Here's a way to aggregation to get cast size & first cast members
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
 RETURN m.title, collect(a.name)[1] AS `A cast member`, size(collect(a.name)) AS castSize
@@ -283,7 +287,7 @@ RETURN m.title, collect(a.name)[1] AS `A cast member`, size(collect(a.name)) AS 
 	<summary> <b> 7. WITH and UNWIND </b></summary>
 	<br>
 
-// with and unwind
+The WITH clause allows query parts to be chained together, piping the results from one to be used as starting points or criteria in the next. With UNWIND, you can transform any list back into individual rows. These lists can be parameters that were passed in, previously collect -ed result or other list expressions.
 ```
 MATCH (m:Movie)<-[:ACTED_IN]-(p:Person)
 WITH collect(p) AS actors, count(p) AS actorCount, m
@@ -296,21 +300,21 @@ RETURN m.title, actorCount, actor.name
 	<summary> <b> 8. DISTINCT, ORDER BY and LIMIT</b></summary>
 	<br>
 
-// eliminate duplicates using DISTINCT
+Eliminate duplicates using DISTINCT
 ```
 MATCH (p:Person)-[:DIRECTED | ACTED_IN]->(m:Movie)
 WHERE p.name = 'Tom Hanks'
 RETURN DISTINCT m.title, m.released
 ```
 	
-// eliminate duplicates using DISTINCT in lists, f.e. Tom Hanks acted and directed "That Thing You Do"
+Eliminate duplicates using DISTINCT in lists, f.e. Tom Hanks acted and directed "That Thing You Do"
 ```
 MATCH (p:Person)-[:ACTED_IN | DIRECTED | WROTE]->(m:Movie)
 WHERE m.released = 1996
 RETURN m.title, collect(DISTINCT p.name) AS credits
 ```
 
-// ordering results
+Return your results in a certain order.
 ```
 MATCH (p:Person)-[:DIRECTED | ACTED_IN]->(m:Movie)
 WHERE p.name = 'Tom Hanks' OR p.name = 'Keanu Reeves'
@@ -318,7 +322,7 @@ RETURN DISTINCT m.title, m.released
 ORDER BY m.released DESC, m.title
 ```
 
-// limiting the number of results
+Limiting the number of results
 ```
 MATCH (m:Movie)
 RETURN m.title as title, m.released as year   
@@ -330,28 +334,28 @@ ORDER BY m.released DESC LIMIT 10
 	<summary> <b> 9. ADDITIONAL CYPHERS QUERIES</b></summary>
 	<br>
 
-// find movies released in the '90s
+Find movies released in the '90s.
 ```
 MATCH (nineties:Movie) 
 WHERE nineties.released >= 1990 AND nineties.released < 2000
 RETURN nineties.title
 ```
 
-// the bacon path, the shortest path of any relationships to Meg Ryan
+The bacon path, the shortest path of any relationships to Meg Ryan.
 ```
 MATCH p=shortestPath(
 (bacon:Person {name:"Kevin Bacon"})-[*]-(meg:Person {name:"Meg Ryan"}))
 RETURN p
 ```
 
-// retrieve all movies that wew released in the years 2000, 2004, and 2008, returning title and year
+Retrieve all movies that was released in the years 2000, 2004, and 2008, returning title and year.
 ```
 MATCH (m:Movie)
 WHERE m.released IN [2000, 2004, 2008]
 RETURN m.title, m.released
 ```
 
-// retrieve all persons who’s name begins with Tom and optionally return the name of a movie that this person directed.
+Retrieve all persons who’s name begins with Tom and optionally return the name of a movie that this person directed.
 ```
 MATCH (p:Person)
 WHERE p.name STARTS WITH 'Tom'
@@ -359,7 +363,7 @@ OPTIONAL MATCH (p)-[:DIRECTED]->(m:Movie)
 RETURN p.name, m.title
 ```
 
-// retrieve all actors that have not appeared in more than 3 movies. Return their names and list of movies.
+Retrieve all actors that have not appeared in more than 3 movies. Return their names and list of movies.
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
 WITH a, count(a) AS numMovies, collect(m.title) AS movies
@@ -382,7 +386,7 @@ RETURN p, a, m
 
 ### Additional links
 
-// course - introduction to Neo4j
+A more thorough course / introduction can be found by visiting the play guide in your Neo4j Browser.
 ```
 :play 4.0-intro-neo4j-exercises
 ```
