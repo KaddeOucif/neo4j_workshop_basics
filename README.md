@@ -371,10 +371,12 @@ RETURN a.name, movies
 <details>
 	<summary> <b> [BONUS] EASTER EGG</b></summary>
 	<br>
+	
 ```
 MATCH (p:Person{name:'Emil Eifrem'})-[a:ACTED_IN]->(m:Movie)
 RETURN p, a, m
 ```
+	
 </details>
 
 
