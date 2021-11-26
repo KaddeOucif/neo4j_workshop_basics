@@ -367,7 +367,7 @@ Retrieve all actors that have not appeared in more than 3 movies. Return their n
 ```
 MATCH (a:Person)-[:ACTED_IN]->(m:Movie)
 WITH a, count(a) AS numMovies, collect(m.title) AS movies
-WHERE numMovies <= 5
+WHERE numMovies <= 3
 RETURN a.name, movies
 ```
 </details>
