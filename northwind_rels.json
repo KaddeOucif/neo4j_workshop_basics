@@ -2,132 +2,132 @@
 "rels": [
   {
     "id": "2",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "3",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "4",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "5",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "6",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "7",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "8",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "9",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "10",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "11",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "12",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "13",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "14",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "15",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "16",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "17",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "18",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "19",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "20",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "21",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "22",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "23",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "24",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   },
   {
     "id": "25",
-    "application": "orders"
+    "application": "orders",
     "table": "orderApp"
   },
   {
     "id": "26",
-    "application": "product"
+    "application": "product",
     "table": "suppliers"
   },
   {
     "id": "27",
-    "application": "customers"
+    "application": "customers",
     "table": "customer"
   }
   ]
